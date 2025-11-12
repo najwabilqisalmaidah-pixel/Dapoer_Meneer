@@ -6,35 +6,48 @@
   <title>Daftar Menu Restoran</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Efek transisi halus saat ganti mode -->
+  <style>
+    html {
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-500 font-sans min-h-screen flex items-center justify-center">
 
   <div id="app" class="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-5 w-[90%] max-w-[380px] text-center">
+    
+    <!-- 💡 Bagian Login -->
     <div id="loginSection">
       <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">🔐 Pilih Jenis Pengguna</h2>
 
-<!-- Pilihan tema -->
-<div class="flex justify-center gap-2 mb-4">
-  <button onclick="setTheme('light')" class="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-lg text-gray-700 dark:text-gray-100 text-sm">
-    ☀️ Terang
-  </button>
-  <button onclick="setTheme('dark')" class="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-lg text-gray-700 dark:text-gray-100 text-sm">
-    🌙 Gelap
-  </button>
-</div>
+      <!-- Pilihan tema -->
+      <div class="flex justify-center gap-2 mb-4">
+        <button onclick="setTheme('light')" class="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-lg text-gray-700 dark:text-gray-100 text-sm">
+          ☀️ Terang
+        </button>
+        <button onclick="setTheme('dark')" class="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-lg text-gray-700 dark:text-gray-100 text-sm">
+          🌙 Gelap
+        </button>
+      </div>
 
+      <!-- Pilih jenis pengguna -->
+      <select id="role" onchange="showInput()" 
         class="border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-400">
         <option value="">-- Pilih --</option>
         <option value="pegawai">Pegawai</option>
         <option value="pelanggan">Pelanggan</option>
       </select>
 
+      <!-- Input kode pegawai -->
       <div id="pegawai-input" class="hidden mt-4">
         <input type="password" id="kodePegawai" placeholder="Masukkan kode pegawai"
           class="border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-400 text-gray-800 dark:text-gray-100">
       </div>
 
+      <!-- Tombol login -->
       <button onclick="cekLogin()" 
         class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg w-full transition duration-200">
         Lanjut
@@ -43,7 +56,7 @@
       <p id="pesan" class="text-red-500 text-sm mt-3 font-medium"></p>
     </div>
 
-    <!-- Daftar Menu -->
+    <!-- 💡 Bagian Menu -->
     <div id="menuSection" class="hidden">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">🍽️ Daftar Menu</h2>
@@ -80,6 +93,7 @@
       { nama: "Es Teh Manis", tersedia: true }
     ];
 
+    // 🔹 Tampilkan input kode jika pilih pegawai
     function showInput() {
       const role = document.getElementById("role").value;
       const pegawaiInput = document.getElementById("pegawai-input");
@@ -89,6 +103,7 @@
       else pegawaiInput.classList.add("hidden");
     }
 
+    // 🔹 Cek login
     function cekLogin() {
       const role = document.getElementById("role").value;
       const kode = document.getElementById("kodePegawai").value;
@@ -110,6 +125,7 @@
       }
     }
 
+    // 🔹 Tampilkan menu sesuai role
     function tampilkanMenu(role) {
       document.getElementById("loginSection").classList.add("hidden");
       document.getElementById("menuSection").classList.remove("hidden");
@@ -118,6 +134,7 @@
       renderMenu(role);
     }
 
+    // 🔹 Render daftar menu
     function renderMenu(role) {
       menuListEl.innerHTML = "";
       menuItems.forEach((item, index) => {
@@ -141,6 +158,7 @@
       });
     }
 
+    // 🔹 Tambah menu baru
     function tambahMenu() {
       const nama = document.getElementById("menuBaru").value.trim();
       if (!nama) return Swal.fire("⚠️", "Nama menu tidak boleh kosong!", "warning");
@@ -150,6 +168,7 @@
       renderMenu("pegawai");
     }
 
+    // 🔹 Edit nama menu
     function editMenu(index) {
       const namaBaru = prompt("Edit nama menu:", menuItems[index].nama);
       if (namaBaru) {
@@ -159,12 +178,14 @@
       }
     }
 
+    // 🔹 Ubah status tersedia/habis
     function toggleStatus(index) {
       menuItems[index].tersedia = !menuItems[index].tersedia;
       simpanMenu();
       renderMenu("pegawai");
     }
 
+    // 🔹 Hapus menu
     function hapusMenu(index) {
       if (confirm("Hapus menu ini?")) {
         menuItems.splice(index, 1);
@@ -173,44 +194,45 @@
       }
     }
 
+    // 🔹 Simpan ke localStorage
     function simpanMenu() {
       localStorage.setItem("menuItems", JSON.stringify(menuItems));
     }
 
+    // 🔹 Logout
     function logout() {
       location.reload();
     }
 
+    // 🔹 Toggle mode manual (tombol 🌓)
     function toggleTheme() {
       darkMode = !darkMode;
       document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
     }
-    // Simpan preferensi mode user
-function setTheme(mode) {
-  if (mode === 'dark') {
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('theme', 'dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('theme', 'light');
-  }
-}
 
-// Muat preferensi mode saat web dibuka
-function loadTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-}
+    // 🔹 Pilih tema di login
+    function setTheme(mode) {
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+    }
 
-// Jalankan saat halaman pertama kali dibuka
-loadTheme();
+    // 🔹 Muat preferensi tema saat halaman dibuka
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
 
+    loadTheme();
   </script>
 </body>
 </html>
-
-
